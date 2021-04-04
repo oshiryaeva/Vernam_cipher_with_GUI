@@ -3,26 +3,75 @@ import javax.swing.border.TitledBorder;
 import java.awt.*;
 
 public class Main {
-    private JTextArea plainText;
+    private JTextArea plainTextArea;
     private JButton generateKeyButton;
     private JButton decryptButton;
     private JButton clearButton;
     private JButton encryptButton;
-    private JTextArea encryptedText;
+    private JTextArea encryptedTextArea;
     private JPanel mainPanel;
-    private JTextField keyText;
-    private JTextArea decryptedText;
+    private JTextField keyTextField;
+    private JTextArea decryptedTextArea;
     private JLabel decryptedLabel;
     private JLabel plainLabel;
     private JLabel encryptedLabel;
+    private VernamEncryptor encryptor;
 
     public static void main(String[] args) {
-        JFrame frame = new JFrame("Main");
-        frame.setContentPane(new Main().mainPanel);
-        frame.setPreferredSize(new Dimension(500, 500));
+        JFrame frame = new JFrame("Лабораторная работа №1 вариант 39: выполнил студент гр. 6138 Плешаков Е.Г.");
+        Main main = new Main();
+        frame.setContentPane(main.mainPanel);
+        frame.setMinimumSize(new Dimension(600, 400));
+        frame.setMaximumSize(new Dimension(1024, 768));
+        frame.setPreferredSize(new Dimension(650, 400));
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.pack();
         frame.setVisible(true);
+        main.encryptor = new VernamEncryptor();
+        main.initUIComponents();
+    }
+
+    private void initUIComponents() {
+        plainTextArea.setWrapStyleWord(true);
+        plainTextArea.setLineWrap(true);
+        encryptedTextArea.setWrapStyleWord(true);
+        encryptedTextArea.setLineWrap(true);
+        decryptedTextArea.setWrapStyleWord(true);
+        decryptedTextArea.setLineWrap(true);
+
+        generateKeyButton.addActionListener(e -> {
+            String key = encryptor.generateKey(plainTextArea.getText().length());
+            keyTextField.setText(key);
+        });
+
+        encryptButton.addActionListener(e -> {
+            String plainText = plainTextArea.getText();
+            if (plainText.length() == 0)
+                return;
+            String key = keyTextField.getText();
+            if (key.length() == 0)
+                key = encryptor.generateKey(plainText.length());
+            String encryptedText = encryptor.encrypt(plainText, key);
+            encryptedTextArea.setText(encryptedText);
+        });
+
+        decryptButton.addActionListener(e -> {
+            String encryptedText = encryptedTextArea.getText();
+            if (encryptedText.length() == 0)
+                return;
+            String key = keyTextField.getText();
+            if (key.length() == 0)
+                return;
+            String decryptedText = encryptor.decrypt(encryptedText, key);
+            decryptedTextArea.setText(decryptedText);
+        });
+
+        clearButton.addActionListener(e -> {
+            plainTextArea.setText("");
+            encryptedTextArea.setText("");
+            keyTextField.setText("");
+            decryptedTextArea.setText("");
+        });
     }
 
     {
@@ -41,13 +90,13 @@ public class Main {
      */
     private void $$$setupUI$$$() {
         mainPanel = new JPanel();
-        mainPanel.setLayout(new com.intellij.uiDesigner.core.GridLayoutManager(4, 2, new Insets(0, 0, 0, 0), -1, -1));
+        mainPanel.setLayout(new com.intellij.uiDesigner.core.GridLayoutManager(5, 2, new Insets(0, 0, 0, 0), -1, -1));
         mainPanel.setBorder(BorderFactory.createTitledBorder(null, "Шифр Вернама", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, null, null));
-        plainText = new JTextArea();
-        mainPanel.add(plainText, new com.intellij.uiDesigner.core.GridConstraints(0, 1, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_BOTH, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, null, new Dimension(150, 50), null, 0, false));
+        plainTextArea = new JTextArea();
+        mainPanel.add(plainTextArea, new com.intellij.uiDesigner.core.GridConstraints(0, 1, 2, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_BOTH, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, null, new Dimension(150, 50), null, 0, false));
         final JPanel panel1 = new JPanel();
         panel1.setLayout(new com.intellij.uiDesigner.core.GridLayoutManager(2, 3, new Insets(0, 0, 0, 0), -1, -1));
-        mainPanel.add(panel1, new com.intellij.uiDesigner.core.GridConstraints(1, 0, 1, 2, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_BOTH, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+        mainPanel.add(panel1, new com.intellij.uiDesigner.core.GridConstraints(2, 0, 1, 2, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_BOTH, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         generateKeyButton = new JButton();
         generateKeyButton.setText("Сгенерировать ключ");
         panel1.add(generateKeyButton, new com.intellij.uiDesigner.core.GridConstraints(0, 0, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_HORIZONTAL, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
@@ -60,21 +109,21 @@ public class Main {
         clearButton = new JButton();
         clearButton.setText("Очистить форму");
         panel1.add(clearButton, new com.intellij.uiDesigner.core.GridConstraints(1, 2, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_HORIZONTAL, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        keyText = new JTextField();
-        panel1.add(keyText, new com.intellij.uiDesigner.core.GridConstraints(0, 1, 1, 2, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_WEST, com.intellij.uiDesigner.core.GridConstraints.FILL_HORIZONTAL, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
-        encryptedText = new JTextArea();
-        mainPanel.add(encryptedText, new com.intellij.uiDesigner.core.GridConstraints(2, 1, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_BOTH, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, null, new Dimension(150, 50), null, 0, false));
+        keyTextField = new JTextField();
+        panel1.add(keyTextField, new com.intellij.uiDesigner.core.GridConstraints(0, 1, 1, 2, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_WEST, com.intellij.uiDesigner.core.GridConstraints.FILL_HORIZONTAL, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
+        encryptedTextArea = new JTextArea();
+        mainPanel.add(encryptedTextArea, new com.intellij.uiDesigner.core.GridConstraints(3, 1, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_BOTH, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, null, new Dimension(150, 50), null, 0, false));
         plainLabel = new JLabel();
         plainLabel.setText("Исходный текст");
         mainPanel.add(plainLabel, new com.intellij.uiDesigner.core.GridConstraints(0, 0, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_WEST, com.intellij.uiDesigner.core.GridConstraints.FILL_NONE, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         encryptedLabel = new JLabel();
         encryptedLabel.setText("Шифрованный текст");
-        mainPanel.add(encryptedLabel, new com.intellij.uiDesigner.core.GridConstraints(2, 0, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_WEST, com.intellij.uiDesigner.core.GridConstraints.FILL_NONE, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        decryptedText = new JTextArea();
-        mainPanel.add(decryptedText, new com.intellij.uiDesigner.core.GridConstraints(3, 1, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_BOTH, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, null, new Dimension(150, 50), null, 0, false));
+        mainPanel.add(encryptedLabel, new com.intellij.uiDesigner.core.GridConstraints(3, 0, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_WEST, com.intellij.uiDesigner.core.GridConstraints.FILL_NONE, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        decryptedTextArea = new JTextArea();
+        mainPanel.add(decryptedTextArea, new com.intellij.uiDesigner.core.GridConstraints(4, 1, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_BOTH, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, null, new Dimension(150, 50), null, 0, false));
         decryptedLabel = new JLabel();
-        decryptedLabel.setText("Расшифрованный текст");
-        mainPanel.add(decryptedLabel, new com.intellij.uiDesigner.core.GridConstraints(3, 0, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_WEST, com.intellij.uiDesigner.core.GridConstraints.FILL_NONE, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        decryptedLabel.setText("Дешифрованный текст");
+        mainPanel.add(decryptedLabel, new com.intellij.uiDesigner.core.GridConstraints(4, 0, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_WEST, com.intellij.uiDesigner.core.GridConstraints.FILL_NONE, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
     }
 
     /**
